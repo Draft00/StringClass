@@ -1,0 +1,10 @@
+/*
+
+Class MyString // Basic functionality
+{
+
+
+}
+
+
+*/
