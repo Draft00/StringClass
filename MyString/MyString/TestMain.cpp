@@ -95,10 +95,10 @@ void function_check()
 	s.replace(6, 7, "wonderful"); std_str.replace(6, 7, "wonderful");
 	cout << s << endl << std_str << endl << endl;
 
-	s = "hello amazing world";
-	a = "wonderful";
-	s.replace(6, 7, a);
-	cout << s << "\nhello wonderful world\n\n";
+	s = "hello amazing world"; std_str = "hello amazing world";
+	a = "";
+	s.replace(6, 7, a); std_str.replace(6, 7, a);
+	cout << s << endl << std_str << endl << endl;
 
 	s = "hello amazing world";
 	s2 = s.substr(6);
@@ -111,8 +111,8 @@ void function_check()
 	s = "123123123412345"; std_str = "123123123412345";
 	a = "1234";
 	b = "123";
-	cout << s.find("1234") << s.find("123", 1) << s.find(a) << s.find(b, 1);
-	cout << std_str.find("1234") << std_str.find("123", 1) << std_str.find(a) << std_str.find(b, 1);
+	cout << s.find("1234") << s.find("123", 1) << s.find(a) << s.find(b, 1) << endl;
+	cout << std_str.find("1234") << std_str.find("123", 1) << std_str.find(a) << std_str.find(b, 1) << endl << endl;
 
 	cout << s.find("abc") << endl << std_str.find("abc") << endl << endl; 
 	cout << s.find("") << endl << std_str.find("") << endl << endl;
@@ -122,6 +122,7 @@ void function_check()
 void operator_check()
 {
 	MyString a, b, c, x, y;
+	std::string a1, b1;
 	string s;
 
 	x = "abcd";
@@ -148,38 +149,33 @@ void operator_check()
 	cout << (a == b) << (a != b) << (a > b) << (a >= b) << (a < b) << (a <= b);
 	cout << "\n100101\n\n";
 
-	a = "abcd";
-	b = "abce";
-	cout << (a == b) << (a != b) << (a > b) << (a >= b) << (a < b) << (a <= b);
-	cout << "\n010011\n\n";
+	a = "abcd";  a1 = "abcd";
+	b = "abce"; b1 = "abce";
+	cout << (a == b) << (a != b) << (a > b) << (a >= b) << (a < b) << (a <= b) << endl;
+	cout << (a1 == b1) << (a1 != b1) << (a1 > b1) << (a1 >= b1) << (a1 < b1) << (a1 <= b1) << endl << endl;
 
-	a = "abce";
-	b = "abcd";
-	cout << (a == b) << (a != b) << (a > b) << (a >= b) << (a < b) << (a <= b);
-	cout << "\n011100\n\n";
+	a = "abce"; a1 = "abce";
+	b = "abcd"; b1 = "abcd";
+	cout << (a == b) << (a != b) << (a > b) << (a >= b) << (a < b) << (a <= b) << endl;
+	cout << (a1 == b1) << (a1 != b1) << (a1 > b1) << (a1 >= b1) << (a1 < b1) << (a1 <= b1) << endl << endl;
 
-	a = "abc";
-	b = "abcd";
-	cout << (a == b) << (a != b) << (a > b) << (a >= b) << (a < b) << (a <= b);
-	cout << "\n011100\n\n";
+	a = "abc"; a1 = "abc";
+	b = "abcd"; b1 = "abcd";
+	cout << (a == b) << (a != b) << (a > b) << (a >= b) << (a < b) << (a <= b) << endl;
+	cout << (a1 == b1) << (a1 != b1) << (a1 > b1) << (a1 >= b1) << (a1 < b1) << (a1 <= b1) << endl << endl;
 
-	a = "abcd";
-	b = "abc";
-	cout << (a == b) << (a != b) << (a > b) << (a >= b) << (a < b) << (a <= b);
-	cout << "\n010011\n\n";
+	a = "abcd"; a1 = "abcd";
+	b = "abc"; b1 = "abc";
+	cout << (a == b) << (a != b) << (a > b) << (a >= b) << (a < b) << (a <= b) << endl;
+	cout << (a1 == b1) << (a1 != b1) << (a1 > b1) << (a1 >= b1) << (a1 < b1) << (a1 <= b1) << endl << endl;
 
-	a.clear();
-	cout << (a == b) << (a != b) << (a > b) << (a >= b) << (a < b) << (a <= b);
-	cout << "\n011100\n\n";
+	a.clear(); a1.clear();
+	cout << (a == b) << (a != b) << (a > b) << (a >= b) << (a < b) << (a <= b) << endl;
+	cout << (a1 == b1) << (a1 != b1) << (a1 > b1) << (a1 >= b1) << (a1 < b1) << (a1 <= b1) << endl << endl;
 
-	b.clear();
-	cout << (a == b);
-	cout << (a != b);
-	cout << (a > b);
-	cout << (a >= b);
-	cout << (a < b);
-	cout << (a <= b);
-	cout << "\n100101\n\n";
+	b.clear(); b1.clear();
+	cout << (a == b) << (a != b) << (a > b) << (a >= b) << (a < b) << (a <= b) << endl;
+	cout << (a1 == b1) << (a1 != b1) << (a1 > b1) << (a1 >= b1) << (a1 < b1) << (a1 <= b1) << endl << endl;
 }
 
 int main()

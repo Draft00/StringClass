@@ -481,9 +481,9 @@ namespace STD
 	int STD::MyString::_compare(const MyString & other) const
 	{
 		if (_str_len < other._str_len)
-			return 1;
-		else if (_str_len > other._str_len)
 			return -1;
+		else if (_str_len > other._str_len)
+			return 1;
 		return strcmp(_str, other._str);
 	}
 	void STD::MyString::_substr(char*& buffer, const char* cchar_array, size_t pos, size_t len) const
