@@ -27,42 +27,41 @@ namespace STD
 
 	public:
 		MyString();							// default constructor
-		MyString(const MyString&);			// copy constructor
+		MyString(const MyString& other);			// copy constructor
 
 		//ndr3w: use const for immutable vars
-		MyString(const char* const);				// char array constructor
-		MyString(const std::string&);				// std::string constructor. has a cast!!! string -> char[]
+		MyString(const char* const cchar_array);				// char array constructor
+		MyString(const std::string& std_string);				// std::string constructor. 
 		
-		MyString(const size_t count, const char c); //ndr3w: much better add an arg names in declarations! Names are comments for you code 
+		MyString(const size_t count, const char c); //ndr3w: much better add an arg names in declarations! Names are comments for you code	(+) 
 		MyString(const std::initializer_list<char>& list);
-		MyString(const char* const, const size_t); 
+		MyString(const char* const cchar_array, const size_t count); 
 
-	//ndr3w: too much public key words
-	//public:
+	//ndr3w: too much public key words	(+)
 		~MyString();
 
 	//=
-		MyString& operator = (const MyString&);
-		MyString& operator = (const char*);
-		MyString& operator = (const std::string&); //TESTIT
-		MyString& operator = (char); //TESTIT
+		MyString& operator = (const MyString& other);
+		MyString& operator = (const char* cchar_array);
+		MyString& operator = (const std::string& std_string); 
+		MyString& operator = (char c); 
 	// +=
-		MyString& operator += (const MyString&); 
-		MyString& operator += (const char*); 
-		MyString& operator += (const std::string&);
+		MyString& operator += (const MyString& other);
+		MyString& operator += (const char* cchar_array); 
+		MyString& operator += (const std::string& std_string);
 
 	//+
-		friend MyString operator+ (const MyString&, const MyString&); //friend???? friend.
-		friend MyString operator+ (const MyString&, const char*);
-		friend MyString operator+ (const MyString&, const std::string&);
+		friend MyString operator+ (const MyString& left_other, const MyString& right_other); //friend???? friend.
+		friend MyString operator+ (const MyString& other, const char* cchar_array);
+		friend MyString operator+ (const MyString& left_other, const std::string& std_string);
 
-		//ndr3w: alignment!
-		friend bool operator == (const MyString&, const MyString&);
-		friend bool operator != (const MyString&, const MyString&);
-		friend bool operator <  (const MyString&, const MyString&);
-		friend bool operator >  (const MyString&, const MyString&);
-		friend bool operator <= (const MyString&, const MyString&);
-		friend bool operator >= (const MyString&, const MyString&);
+		//ndr3w: alignment! (5?)
+		friend bool operator == (const MyString& left, const MyString& right);
+		friend bool operator != (const MyString& left, const MyString& right);
+		friend bool operator <  (const MyString& left, const MyString& right);
+		friend bool operator >  (const MyString& left, const MyString& right);
+		friend bool operator <= (const MyString& left, const MyString& right);
+		friend bool operator >= (const MyString& left, const MyString& right);
 
 		//	Element access 
 		const char& operator [] (size_t) const;
@@ -78,37 +77,36 @@ namespace STD
 		bool empty() const;
 
 		size_t capacity() const; // return the current amount of allocated memory for array
-		void shrink_to_fit(size_t cap); // reduce the capacity to size TESTIT
-		void clear(); //TESTIT
+		void shrink_to_fit(size_t cap); // reduce the capacity to size 
+		void clear(); 
 
 		
-	//public:
 		size_t find(const char* cchar_array, size_t pos) const;
 		size_t find(const char* cchar_array) const;
 		size_t find(const std::string& std_string, size_t pos) const;
 		size_t find(const std::string& std_string) const;
 
-	//public:
 		MyString& append(const char* cchar_array); 
 		MyString& append(const char* cchar_array, size_t index, size_t count); 
 		MyString& append(const std::string& std_string);
 		MyString& append(const std::string& std_string, size_t index, size_t count);
 		MyString& append(size_t count, char c);
-	//public:
+
 		MyString& insert(size_t index, const char* cchar_array);
 		MyString& insert(size_t index, const char* cchar_array, size_t count);
 		MyString& insert(size_t index, size_t count, char c);
 		MyString& insert(size_t index, const std::string& std_string);
 		MyString& insert(size_t index, const std::string& std_string, size_t count);
-	//public:
+
 		MyString& erase(size_t index, size_t count);
-	//public:
+
 		MyString& replace(size_t index, size_t count, const char* cchar_array);
 		MyString& replace(size_t index, size_t count, const std::string& std_string);
-	//public:
+
 		MyString substr(size_t index, size_t count); 
 		MyString substr(size_t index);
 
+		//ok. I'll remember that for the future, but still (4?)
 		//ndr3w: the _ (understroke) prefix is not recommend to use for identation of private fields or methods. Main reason - understroke is reserved for internal compiler usage. 
 	private:
 		void _dealloc_cstring(char*& buffer);
@@ -132,12 +130,12 @@ namespace STD
 		void _replace(size_t pos, size_t count, const char* cchar_array);
 
 	private:
-		//ndr3w: str_ prefix is useless and decrease the readability + align code with tabs
+		//ndr3w: str_ prefix is useless and decrease the readability	(+) + align code with tabs	(2?)
 		size_t _length		= 0;				// length
 		size_t _capacity	= 0;				// capacity
 		char*  _str			= nullptr;			// c-string
 
-		//ndr3w: read about constexpr
+		//ndr3w: read about constexpr	(3?)
 		static constexpr const size_t _increaseBy = 1;
 	};
 

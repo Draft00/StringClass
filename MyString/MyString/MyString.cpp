@@ -6,7 +6,7 @@ namespace STD
 	/*
 		Constructors
 	*/
-	//ndr3w: always initialize a default fields values
+	//ndr3w: always initialize a default fields values	(1?)
 	STD::MyString::MyString():
 		_length(0),
 		_capacity(0),
@@ -214,7 +214,7 @@ namespace STD
 	}
 	size_t STD::MyString::size() const
 	{
-		return  length(); //ndr3w: if class method doing same funtionality just use existing code
+		return  length(); //ndr3w: if class method doing same funtionality just use existing code	(+)
 	}
 	size_t STD::MyString::capacity() const
 	{
@@ -222,7 +222,7 @@ namespace STD
 	}
 	bool STD::MyString::empty() const
 	{
-		return size() == 0; //ndr3w: if we have wrappers of private fields mush better use them. If we have to change a logic for size determination we will change size() method only.
+		return size() == 0; //ndr3w: if we have wrappers of private fields mush better use them. If we have to change a logic for size determination we will change size() method only.	(+)
 	}
 	void STD::MyString::shrink_to_fit(size_t cap)
 	{
@@ -291,7 +291,7 @@ namespace STD
 	}
 	MyString& STD::MyString::append(size_t count, char c)
 	{
-		char* buffer = _alloc_cstring(count, c); //ndr3w: mb here should be char* buffer = _alloc_cstring(...); like usual alloc function
+		char* buffer = _alloc_cstring(count, c); //ndr3w: mb here should be char* buffer = _alloc_cstring(...); like usual alloc function	(+)
 		_append(buffer, count);
 		_dealloc_cstring(buffer);
 		return *this; 
@@ -374,7 +374,7 @@ namespace STD
 		if (index > _length)
 			throw;
 		size_t count = strlen(_str) - index; 
-		char* buffer = _substr(_str, index, count); //ndr3w: mb here it should be char *buffer = _substr(index, count); we dont need pass the _str because it is our own field
+		char* buffer = _substr(_str, index, count); //ndr3w: mb here it should be char *buffer = _substr(index, count); we dont need pass the _str because it is our own field (+)
 		MyString result(buffer);
 		_dealloc_cstring(buffer);
 		return result;
@@ -405,8 +405,9 @@ namespace STD
 		_setCapacity(cap); 
 	}
 
+	//	(+)
 	//ndr3w: _alloc_cstring and _delete_str should be antipodes but naming is confusing =\ Try to use alloc and dealloc! AND! ALLOCATOR ALWAYS RETURNING A POINTER! WE DONT NEED pass it as arg! 
-	// void *p = alloc(size);
+	// void *p = alloc(size); 
 	char* MyString::_alloc_cstring(const size_t count) const
 	{
 		char* buffer = nullptr; 
@@ -425,7 +426,7 @@ namespace STD
 		cchar_array[begin] = '\0';
 	}
 
-	//ndr3w: name _delete_str is not clear for understanding.
+	//ndr3w: name _delete_str is not clear for understanding.	(+)
 	void MyString::_dealloc_cstring(char*& buffer) 
 	{
 		delete[] buffer;

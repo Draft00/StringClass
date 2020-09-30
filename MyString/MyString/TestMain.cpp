@@ -183,6 +183,7 @@ int main()
 	string s = "lala";
 	//s.insert(1, "", 2);
 	//cout << s; 
+	consructors_test();
 	function_check();
 	operator_check();
 	return 0;
