@@ -6,20 +6,24 @@ namespace STD
 	/*
 		Constructors
 	*/
-	STD::MyString::MyString()
+	//ndr3w: always initialize a default fields values
+	STD::MyString::MyString():
+		_length(0),
+		_capacity(0),
+		_str(nullptr)
 	{
 		_setCapacity(0);
 		_setLength(0);
 	}
 	STD::MyString::MyString(const MyString& other)
 	{
-		_append(other._str, other._str_len);
+		_append(other._str, other._length);
 	}
 	STD::MyString::MyString(const char* cchar_arr)
 	{
 		_append(cchar_arr);
 	}
-	STD::MyString::MyString(std::string& std_string)
+	STD::MyString::MyString(const std::string& std_string)
 	{
 		_append(std_string.c_str());
 	} 
@@ -37,9 +41,11 @@ namespace STD
 		_increaseCapacity(list_size);
 		_setLength(list_size);
 		size_t i = 0;
+
+		//ndr3w: this copy code repeats many times! it needs a separate function!
 		for (auto& element : list)
 			operator[](i++) = element;
-		operator[](_str_len) = '\0';
+		operator[](_length) = '\0';
 	}
 
 	/*
@@ -61,8 +67,8 @@ namespace STD
 	{
 		delete[] this->_str;
 		this->_str = nullptr;
-		_str_len = 0;
-		_str_cap = 0;
+		_length = 0;
+		_capacity = 0;
 	}
 
 
@@ -74,7 +80,7 @@ namespace STD
 		if (this != &other) 
 		{
 			_setLength(0);
-			_append(other._str, other._str_len);
+			_append(other._str, other._length);
 		}
 		return *this;
 	}
@@ -110,7 +116,7 @@ namespace STD
 	*/
 	MyString& STD::MyString::operator+=(const MyString& other)
 	{
-		_append(other._str, other._str_len);
+		_append(other._str, other._length);
 		return *this; 
 	}
 	MyString& STD::MyString::operator+=(const char* cchar_array)
@@ -204,23 +210,23 @@ namespace STD
 	//class methods
 	size_t STD::MyString::length() const
 	{
-		return _str_len;
+		return _length;
 	}
 	size_t STD::MyString::size() const
 	{
-		return  _str_len;
+		return  length(); //ndr3w: if class method doing same funtionality just use existing code
 	}
 	size_t STD::MyString::capacity() const
 	{
-		return _str_cap;
+		return _capacity;
 	}
 	bool STD::MyString::empty() const
 	{
-		return _str_len ? false : true;
+		return size() == 0; //ndr3w: if we have wrappers of private fields mush better use them. If we have to change a logic for size determination we will change size() method only.
 	}
 	void STD::MyString::shrink_to_fit(size_t cap)
 	{
-		_decreaseCapacity(_str_len);
+		_decreaseCapacity(_length);
 	}
 	void STD::MyString::clear()
 	{
@@ -228,7 +234,7 @@ namespace STD
 	}
 	const char* STD::MyString::c_str() const
 	{
-		return _str;
+		return data();
 	}
 	const char* STD::MyString::data() const
 	{
@@ -288,7 +294,7 @@ namespace STD
 	MyString& STD::MyString::append(size_t count, char c)
 	{
 		char* buffer = nullptr;
-		_alloc_cstring(buffer, count, c);
+		_alloc_cstring(buffer, count, c); //ndr3w: mb here should be char* buffer = _alloc_cstring(...); like usual alloc function
 		_append(buffer, count);
 		_delete_str(buffer);
 		return *this; 
@@ -358,7 +364,7 @@ namespace STD
 	*/
 	MyString STD::MyString::substr(size_t index, size_t count)
 	{
-		if (index + count > _str_len)
+		if (index + count > _length)
 			throw;
 		char* buffer = nullptr;
 		_substr(buffer, _str, index, count);
@@ -372,11 +378,11 @@ namespace STD
 
 	MyString STD::MyString::substr(size_t index)
 	{
-		if (index > _str_len)
+		if (index > _length)
 			throw;
 		size_t count = strlen(_str) - index; 
 		char* buffer = nullptr;
-		_substr(buffer, _str, index, count);
+		_substr(buffer, _str, index, count); //ndr3w: mb here it should be char *buffer = _substr(index, count); we dont need pass the _str because it is our own field
 		MyString result(buffer);
 		_delete_str(buffer);
 		return result;
@@ -384,28 +390,31 @@ namespace STD
 
 	void MyString::_setLength(const size_t len)
 	{
-		if (_str_len > len)
+		if (_length > len)
 			_clear_str(len);
-		else if (_str_cap < len)  
+		else if (_capacity < len)  
 			_increaseCapacity(len);    
-		_str_len = len;
+		_length = len;
 	}
 	void MyString::_clear_str(const size_t pos)
 	{
-		_fill_str(_str, _str_len, pos, '\0');
-		_str_len = pos;
+		_fill_str(_str, _length, pos, '\0');
+		_length = pos;
 	}
 
 	void MyString::_increaseCapacity(const size_t new_cap)
 	{
-		if (_str_cap > new_cap && _str)
+		if (_capacity > new_cap && _str)
 			return;
-		size_t cap = _str_cap;
+		size_t cap = _capacity;
 		while (cap <= new_cap)
 			cap += _increaseBy;
 
 		_setCapacity(cap); 
 	}
+
+	//ndr3w: _alloc_cstring and _delete_str should be antipodes but naming is confusing =\ Try to use alloc and dealloc! AND! ALLOCATOR ALWAYS RETURNING A POINTER! WE DONT NEED pass it as arg! 
+	// void *p = alloc(size);
 	void MyString::_alloc_cstring(char*& buffer, const size_t count) const
 	{
 		if (buffer)
@@ -422,6 +431,7 @@ namespace STD
 		cchar_array[begin] = '\0';
 	}
 
+	//ndr3w: name _delete_str is not clear for understanding.
 	void MyString::_delete_str(char*& buffer) //!!!! check this!!!!
 	{
 		delete[] buffer;
@@ -430,20 +440,20 @@ namespace STD
 
 	void MyString::_setCapacity(const size_t cap)
 	{
-		if (_str_cap == cap && _str) 
+		if (_capacity == cap && _str) 
 			return;
-		if (cap < _str_len) 
+		if (cap < _length) 
 			return;
 
-		_str_cap = cap; 
+		_capacity = cap; 
 
 		char* buffer = _str;	 
 		_str = nullptr; 
-		_alloc_cstring(_str, _str_cap);
+		_alloc_cstring(_str, _capacity);
 		if (buffer) { 
-			for (size_t i = 0; i < _str_len; ++i)
+			for (size_t i = 0; i < _length; ++i)
 				operator[](i) = buffer[i];
-			operator[](_str_len) = '\0';
+			operator[](_length) = '\0';
 
 			_delete_str(buffer); //delete only not null-terminated
 		}
@@ -459,12 +469,12 @@ namespace STD
 
 	void MyString::_append(const char* cchar_array, size_t n)
 	{
-		_increaseCapacity(_str_len + n);
+		_increaseCapacity(_length + n);
 		size_t i = 0;
 		for (; i < n; ++i)
-			operator[](_str_len + i) = cchar_array[i];
-		operator[](_str_len + i) = '\0';
-		_setLength(_str_len + n);
+			operator[](_length + i) = cchar_array[i];
+		operator[](_length + i) = '\0';
+		_setLength(_length + n);
 	}
 	void MyString::_append(const char* cchar_array)
 	{
@@ -472,7 +482,7 @@ namespace STD
 	}
 	void STD::MyString::_decreaseCapacity(const size_t cap)
 	{
-		if (_str_cap < cap)
+		if (_capacity < cap)
 			return; 
 
 		_setCapacity(cap);
@@ -480,9 +490,9 @@ namespace STD
 
 	int STD::MyString::_compare(const MyString & other) const
 	{
-		if (_str_len < other._str_len)
+		if (_length < other._length)
 			return -1;
-		else if (_str_len > other._str_len)
+		else if (_length > other._length)
 			return 1;
 		return strcmp(_str, other._str);
 	}
@@ -494,6 +504,7 @@ namespace STD
 		for (size_t i = 0; i < len; ++i)
 			buffer[i] = cchar_array[pos + i];
 	}
+
 	bool STD::MyString::_find_compare(const char* cchar_array, size_t len, size_t pos) const
 	{
 		for (size_t i = 1; i < len; ++i)
@@ -512,11 +523,11 @@ namespace STD
 	{
 		size_t ResultPos = npos;
 		if (pos == npos)
-			pos = _str_len - 1;
+			pos = _length - 1;
 		if (len == 0)
 			return 0;
 			//return ResultPos;
-		for (; pos <= _str_len - len; ++pos)
+		for (; pos <= _length - len; ++pos)
 		{
 			if (operator[](pos) == *cchar_array && _find_compare(cchar_array, len, pos))
 			{
@@ -530,18 +541,18 @@ namespace STD
 	{
 		if (count == 0 || cchar_array == nullptr)
 			return;
-		if (pos == _str_len)
+		if (pos == _length)
 			return _append(cchar_array, count);
-		if (pos > _str_len)
+		if (pos > _length)
 			throw;
 
-		_increaseCapacity(_str_len + count);
+		_increaseCapacity(_length + count);
 
 		if (_str == nullptr)
 			return _append(cchar_array, count);
 
 		char* buffer = nullptr;
-		_substr(buffer, _str, pos, _str_len - pos);
+		_substr(buffer, _str, pos, _length - pos);
 		_clear_str(pos);
 		_append(cchar_array, count);
 		_append(buffer, strlen(buffer));
@@ -550,13 +561,13 @@ namespace STD
 	}
 	void STD::MyString::_erase(size_t pos, size_t count)
 	{
-		if (pos + count > _str_len)
+		if (pos + count > _length)
 			throw;
 		if (_str == nullptr)
 			throw;
 
 		char* buffer = nullptr;
-		_substr(buffer, _str, pos + count, _str_len - count);
+		_substr(buffer, _str, pos + count, _length - count);
 		_clear_str(pos);
 		_append(buffer, strlen(buffer));
 		_delete_str(buffer);
@@ -564,7 +575,7 @@ namespace STD
 	void STD::MyString::_replace(size_t pos, size_t count, const char* cchar_array)
 	{
 		char* third_buffer = nullptr;
-		_substr(third_buffer, _str, pos + count, _str_len);
+		_substr(third_buffer, _str, pos + count, _length); 
 		_clear_str(pos);
 		char* second_buffer = nullptr;
 		_substr(second_buffer, cchar_array, 0, strlen(cchar_array));
