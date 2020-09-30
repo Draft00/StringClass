@@ -73,8 +73,8 @@ namespace STD
 		const char* c_str() const;
 		const char* data() const;
 
-		size_t length() const; // same as size
-		size_t size() const; // return the number of char elements in string
+		size_t length() const; 
+		size_t size() const; 
 		bool empty() const;
 
 		size_t capacity() const; // return the current amount of allocated memory for array
@@ -94,7 +94,6 @@ namespace STD
 		MyString& append(const std::string& std_string);
 		MyString& append(const std::string& std_string, size_t index, size_t count);
 		MyString& append(size_t count, char c);
-		void append2(const char* cchar_array); // a2 = a.append impossible
 	//public:
 		MyString& insert(size_t index, const char* cchar_array);
 		MyString& insert(size_t index, const char* cchar_array, size_t count);
@@ -112,21 +111,21 @@ namespace STD
 
 		//ndr3w: the _ (understroke) prefix is not recommend to use for identation of private fields or methods. Main reason - understroke is reserved for internal compiler usage. 
 	private:
-		void _delete_str(char*& buffer);
+		void _dealloc_cstring(char*& buffer);
 		void _setLength(const size_t len);
 		void _clear_str(const size_t pos);
 		void _setCapacity(const size_t cap);
 		void _increaseCapacity(const size_t cap);
 		void _decreaseCapacity(const size_t cap);
-		void _alloc_cstring(char*& buffer, const size_t count) const;
+		char* _alloc_cstring(const size_t count) const;
 		void _fill_str(char* cchar_array, const size_t len, size_t pos, char c) const;
 		void _append(const char* cchar_array, size_t n);
 		void _append(const char* cchar_array);
 		size_t _strlen(const char* cchar_array);
 		bool _find_compare(const char* cchar_array, size_t len, size_t pos) const;
 		int _compare(const MyString& other) const; //strcoll - it should be lexicographically comparing. maybe i should use classic strcmp?
-		void _substr(char*& buffer, const char* cchar_array, size_t pos, size_t len) const;
-		void _alloc_cstring(char*& buffer, const size_t count, char c) const;
+		char* _substr(const char* cchar_array, size_t pos, size_t len) const;
+		char* _alloc_cstring(const size_t count, char c) const;
 		size_t _find(const char* cchar_array, size_t pos, size_t len) const;
 		void _insert(size_t pos, const char* cchar_array, size_t count);
 		void _erase(size_t pos, size_t count);

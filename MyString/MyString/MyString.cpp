@@ -269,10 +269,9 @@ namespace STD
 	{
 		if (index + count > strlen(cchar_array)) 
 			throw;
-		char* buffer = nullptr; 
-		_substr(buffer, cchar_array, index, count);
+		char* buffer  = _substr(cchar_array, index, count);
 		_append(buffer);
-		_delete_str(buffer);
+		_dealloc_cstring(buffer);
 		return *this;
 	}
 	MyString& STD::MyString::append(const std::string& std_string, size_t index, size_t count)
@@ -280,10 +279,9 @@ namespace STD
 		size_t std_string_length = strlen(std_string.c_str());
 		if (index + count > std_string_length)
 			throw;
-		char* buffer = nullptr;
-		_substr(buffer, std_string.c_str(), index, count);
+		char* buffer = _substr(std_string.c_str(), index, count);
 		_append(buffer);
-		_delete_str(buffer);
+		_dealloc_cstring(buffer);
 		return *this;
 	}
 	MyString& STD::MyString::append(const std::string& std_string)
@@ -293,16 +291,12 @@ namespace STD
 	}
 	MyString& STD::MyString::append(size_t count, char c)
 	{
-		char* buffer = nullptr;
-		_alloc_cstring(buffer, count, c); //ndr3w: mb here should be char* buffer = _alloc_cstring(...); like usual alloc function
+		char* buffer = _alloc_cstring(count, c); //ndr3w: mb here should be char* buffer = _alloc_cstring(...); like usual alloc function
 		_append(buffer, count);
-		_delete_str(buffer);
+		_dealloc_cstring(buffer);
 		return *this; 
 	}
-	void STD::MyString::append2(const char* cchar_array)
-	{
-		_append(cchar_array);
-	}
+
 
 	/*
 		insert
@@ -319,10 +313,9 @@ namespace STD
 	}
 	MyString& STD::MyString::insert(size_t index, size_t count, char c)
 	{
-		char* buffer = nullptr;
-		_alloc_cstring(buffer, count, c);
+		char* buffer = _alloc_cstring(count, c);
 		_insert(index, buffer, count);
-		_delete_str(buffer);
+		_dealloc_cstring(buffer);
 		return *this;
 	}
 	MyString& STD::MyString::insert(size_t index, const std::string& std_string)
@@ -367,12 +360,12 @@ namespace STD
 		if (index + count > _length)
 			throw;
 		char* buffer = nullptr;
-		_substr(buffer, _str, index, count);
+		buffer = _substr(_str, index, count);
 
 		//MyString result;
 		//result = buffer; //not need to set length to 0
 		MyString result(buffer);
-		_delete_str(buffer);
+		_dealloc_cstring(buffer);
 		return result; 
 	}
 
@@ -381,10 +374,9 @@ namespace STD
 		if (index > _length)
 			throw;
 		size_t count = strlen(_str) - index; 
-		char* buffer = nullptr;
-		_substr(buffer, _str, index, count); //ndr3w: mb here it should be char *buffer = _substr(index, count); we dont need pass the _str because it is our own field
+		char* buffer = _substr(_str, index, count); //ndr3w: mb here it should be char *buffer = _substr(index, count); we dont need pass the _str because it is our own field
 		MyString result(buffer);
-		_delete_str(buffer);
+		_dealloc_cstring(buffer);
 		return result;
 	}
 
@@ -415,13 +407,15 @@ namespace STD
 
 	//ndr3w: _alloc_cstring and _delete_str should be antipodes but naming is confusing =\ Try to use alloc and dealloc! AND! ALLOCATOR ALWAYS RETURNING A POINTER! WE DONT NEED pass it as arg! 
 	// void *p = alloc(size);
-	void MyString::_alloc_cstring(char*& buffer, const size_t count) const
+	char* MyString::_alloc_cstring(const size_t count) const
 	{
-		if (buffer)
+		char* buffer = nullptr; 
+		/*if (buffer)
 		{
 			throw;
-		}
+		}*/
 		buffer = new char[count + 1](); //the default constructor will fill the array with 0
+		return buffer; 
 	}
 	void MyString::_fill_str(char* cchar_array, const size_t len, size_t pos, char c) const
 	{
@@ -432,7 +426,7 @@ namespace STD
 	}
 
 	//ndr3w: name _delete_str is not clear for understanding.
-	void MyString::_delete_str(char*& buffer) //!!!! check this!!!!
+	void MyString::_dealloc_cstring(char*& buffer) 
 	{
 		delete[] buffer;
 		buffer = nullptr;
@@ -447,15 +441,16 @@ namespace STD
 
 		_capacity = cap; 
 
-		char* buffer = _str;	 
-		_str = nullptr; 
-		_alloc_cstring(_str, _capacity);
+		char* buffer = _str;	
+		_str = _alloc_cstring(_capacity);
+		//_str = nullptr; 
+		//_alloc_cstring(_str, _capacity);
 		if (buffer) { 
 			for (size_t i = 0; i < _length; ++i)
 				operator[](i) = buffer[i];
 			operator[](_length) = '\0';
 
-			_delete_str(buffer); //delete only not null-terminated
+			_dealloc_cstring(buffer); //delete only not null-terminated
 		}
 
 	}
@@ -496,13 +491,14 @@ namespace STD
 			return 1;
 		return strcmp(_str, other._str);
 	}
-	void STD::MyString::_substr(char*& buffer, const char* cchar_array, size_t pos, size_t len) const
+	char* STD::MyString::_substr(const char* cchar_array, size_t pos, size_t len) const
 	{
 		if (cchar_array == nullptr)
 			throw;
-		_alloc_cstring(buffer, len);
+		char* buffer = _alloc_cstring(len);
 		for (size_t i = 0; i < len; ++i)
 			buffer[i] = cchar_array[pos + i];
+		return buffer; 
 	}
 
 	bool STD::MyString::_find_compare(const char* cchar_array, size_t len, size_t pos) const
@@ -514,10 +510,12 @@ namespace STD
 		}
 		return true;
 	}
-	void STD::MyString::_alloc_cstring(char*& buffer, const size_t count, char c) const
+	char* STD::MyString::_alloc_cstring(const size_t count, char c) const
 	{
-		_alloc_cstring(buffer, count);
+		char* buffer = nullptr; 
+		buffer = _alloc_cstring(count);
 		_fill_str(buffer, count, 0, c);
+		return buffer; 
 	}
 	size_t STD::MyString::_find(const char* cchar_array, size_t pos, size_t len) const
 	{
@@ -551,12 +549,11 @@ namespace STD
 		if (_str == nullptr)
 			return _append(cchar_array, count);
 
-		char* buffer = nullptr;
-		_substr(buffer, _str, pos, _length - pos);
+		char* buffer = _substr(_str, pos, _length - pos);
 		_clear_str(pos);
 		_append(cchar_array, count);
 		_append(buffer, strlen(buffer));
-		_delete_str(buffer);
+		_dealloc_cstring(buffer);
 
 	}
 	void STD::MyString::_erase(size_t pos, size_t count)
@@ -566,22 +563,19 @@ namespace STD
 		if (_str == nullptr)
 			throw;
 
-		char* buffer = nullptr;
-		_substr(buffer, _str, pos + count, _length - count);
+		char* buffer = _substr(_str, pos + count, _length - count);
 		_clear_str(pos);
 		_append(buffer, strlen(buffer));
-		_delete_str(buffer);
+		_dealloc_cstring(buffer);
 	}
 	void STD::MyString::_replace(size_t pos, size_t count, const char* cchar_array)
 	{
-		char* third_buffer = nullptr;
-		_substr(third_buffer, _str, pos + count, _length); 
+		char* third_buffer = _substr(_str, pos + count, _length);
 		_clear_str(pos);
-		char* second_buffer = nullptr;
-		_substr(second_buffer, cchar_array, 0, strlen(cchar_array));
+		char* second_buffer = _substr(cchar_array, 0, strlen(cchar_array));
 		_append(second_buffer);
 		_append(third_buffer);
-		_delete_str(third_buffer);
-		_delete_str(second_buffer);
+		_dealloc_cstring(third_buffer);
+		_dealloc_cstring(second_buffer);
 	}
 }
